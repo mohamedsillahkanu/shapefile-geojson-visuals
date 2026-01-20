@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shapefile to GeoJSON - Visual Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            padding: 30px; 
+            background: #f0f4f8; 
+            font-family: 'Oswald', Arial, sans-serif; 
+            color: #000; 
+        }
+        
+        .page-container { max-width: 1100px; margin: 0 auto; }
+        
+        .header { 
+            background: #004080; 
+            color: white; 
+            padding: 25px; 
+            text-align: center; 
+            border-radius: 10px; 
+            margin-bottom: 25px; 
+        }
+        .header h1 { font-size: 28px; letter-spacing: 2px; }
+        
+        .tool-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tool-title {
+            background: #004080;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .workflow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .step-box {
+            text-align: center;
+        }
+        
+        .step-label {
+            background: #004080;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        
+        .file-box {
+            background: #fff;
+            border: 3px solid #004080;
+            border-radius: 10px;
+            padding: 20px;
+            width: 240px;
+            margin-bottom: 8px;
+        }
+        
+        .file-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+        
+        .file-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #004080;
+            margin-bottom: 5px;
+        }
+        
+        .file-desc {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .step-desc {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .arrow {
+            font-size: 35px;
+            color: #004080;
+            font-weight: 700;
+        }
+        
+        .process-box {
+            background: linear-gradient(135deg, #ffc107 0%, #ffcd39 100%);
+            border: 3px solid #e0a800;
+            border-radius: 10px;
+            padding: 20px 30px;
+            text-align: center;
+        }
+        
+        .process-box h3 {
+            color: #000;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .process-box p {
+            font-size: 11px;
+            color: #333;
+        }
+        
+        .output-box {
+            background: #d4edda;
+            border: 3px solid #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            width: 240px;
+        }
+        
+        .input-files {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .input-file {
+            background: #e7f3ff;
+            border: 2px solid #004080;
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .input-file .ext {
+            font-size: 14px;
+            font-weight: 700;
+            color: #004080;
+        }
+        
+        .input-file .desc {
+            font-size: 9px;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .geojson-preview {
+            background: #1e1e1e;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 9px;
+            color: #9cdcfe;
+            line-height: 1.4;
+            margin-top: 10px;
+        }
+        
+        .geojson-preview .key { color: #9cdcfe; }
+        .geojson-preview .string { color: #ce9178; }
+        .geojson-preview .number { color: #b5cea8; }
+        .geojson-preview .bracket { color: #ffd700; }
+        
+        .geometry-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .geom-icon {
+            text-align: center;
+        }
+        
+        .geom-icon svg {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .geom-icon .label {
+            font-size: 9px;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .footer {
+            background: #004080;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 13px;
+        }
+        
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px dashed #004080;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border: 2px solid #004080;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .info-box h4 {
+            color: #004080;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .info-box p {
+            font-size: 12px;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .benefit-list {
+            margin-top: 12px;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .benefit-icon {
+            color: #28a745;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        .benefit-text {
+            font-size: 11px;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .benefit-text strong {
+            color: #004080;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="header">
+            <h1>SHAPEFILE TO GEOJSON CONVERTER</h1>
+        </div>
+
+        <div class="tool-section">
+            <div class="tool-title">CONVERSION WORKFLOW</div>
+            
+            <div class="workflow">
+                <!-- Input -->
+                <div class="step-box">
+                    <div class="step-label">STEP 1: INPUT</div>
+                    <div class="file-box">
+                        <div style="text-align: center;">
+                            <div class="file-icon">📦</div>
+                            <div class="file-name">data.zip</div>
+                            <div class="file-desc">Shapefile Package</div>
+                        </div>
+                        
+                        <div class="input-files">
+                            <div class="input-file">
+                                <div class="ext">.shp</div>
+                                <div class="desc">Geometry</div>
+                            </div>
+                            <div class="input-file">
+                                <div class="ext">.shx</div>
+                                <div class="desc">Index</div>
+                            </div>
+                            <div class="input-file">
+                                <div class="ext">.dbf</div>
+                                <div class="desc">Attributes</div>
+                            </div>
+                            <div class="input-file">
+                                <div class="ext">.prj</div>
+                                <div class="desc">Projection</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-desc">GIS software standard</div>
+                </div>
+
+                <div class="arrow">&rarr;</div>
+
+                <!-- Process -->
+                <div class="step-box">
+                    <div class="step-label">STEP 2: CONVERT</div>
+                    <div class="process-box">
+                        <h3>PROCESSING</h3>
+                        <p>Read binary geometry</p>
+                        <p>Parse attribute table</p>
+                        <p>Build feature collection</p>
+                        <p>Generate JSON output</p>
+                    </div>
+                </div>
+
+                <div class="arrow">&rarr;</div>
+
+                <!-- Output -->
+                <div class="step-box">
+                    <div class="step-label">STEP 3: OUTPUT</div>
+                    <div class="output-box">
+                        <div class="file-icon" style="font-size: 40px;">{ }</div>
+                        <div class="file-name">data.geojson</div>
+                        <div class="file-desc">GeoJSON File</div>
+                        
+                        <div class="geojson-preview">
+                            <span class="bracket">{</span><br>
+                            &nbsp;&nbsp;<span class="key">"type"</span>: <span class="string">"FeatureCollection"</span>,<br>
+                            &nbsp;&nbsp;<span class="key">"features"</span>: <span class="bracket">[</span><br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="bracket">{</span><br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"type"</span>: <span class="string">"Feature"</span>,<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"geometry"</span>: <span class="bracket">{...}</span>,<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"properties"</span>: <span class="bracket">{...}</span><br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="bracket">}</span><br>
+                            &nbsp;&nbsp;<span class="bracket">]</span><br>
+                            <span class="bracket">}</span>
+                        </div>
+                    </div>
+                    <div class="step-desc">Web-friendly open format</div>
+                </div>
+            </div>
+
+            <!-- Info Section -->
+            <div class="info-section">
+                <div class="info-box">
+                    <h4>What is Shapefile?</h4>
+                    <p>Shapefile is a traditional GIS data format developed by ESRI. It stores geographic features as binary data across multiple files (.shp, .shx, .dbf, .prj). It is the standard format for desktop GIS software like QGIS and ArcGIS.</p>
+                    <p style="margin-top: 10px;"><strong>Why Convert?</strong><br>
+                    Shapefiles are not web-friendly and require multiple files to work. GeoJSON is a single text file that can be easily used in web maps, JavaScript applications, and modern APIs.</p>
+                </div>
+                
+                <div class="info-box">
+                    <h4>GeoJSON Benefits</h4>
+                    <div class="benefit-list">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">+</div>
+                            <div class="benefit-text"><strong>Single File</strong> - All data in one .geojson file instead of 4+ files</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">+</div>
+                            <div class="benefit-text"><strong>Human Readable</strong> - Text-based JSON format, easy to view and edit</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">+</div>
+                            <div class="benefit-text"><strong>Web Compatible</strong> - Works with Leaflet, Mapbox, Google Maps, and web APIs</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">+</div>
+                            <div class="benefit-text"><strong>Open Standard</strong> - No proprietary software needed to read or create</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">+</div>
+                            <div class="benefit-text"><strong>JavaScript Native</strong> - Direct use in web applications without parsing</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <strong>Informatics Consultancy Firm-Sierra Leone (ICF-SL)</strong>
+        </div>
+    </div>
+</body>
+</html>
